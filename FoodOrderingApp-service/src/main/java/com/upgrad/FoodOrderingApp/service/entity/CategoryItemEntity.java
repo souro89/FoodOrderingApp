@@ -11,13 +11,12 @@ public class CategoryItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ITEM_ID")
-    private ItemEntity itemEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "CATEGORY_ID")
-    private CategoryEntity categoryEntity;
+    @Column(name = "ITEM_ID")
+    private int itemEntity;
+
+    @Column(name = "CATEGORY_ID")
+    private int categoryEntity;
 
     public long getId() {
         return id;
@@ -27,19 +26,19 @@ public class CategoryItemEntity {
         this.id = id;
     }
 
-    public ItemEntity getItemEntity() {
+    public int getItemEntity() {
         return itemEntity;
     }
 
-    public void setItemEntity(ItemEntity itemEntity) {
+    public void setItemEntity(int itemEntity) {
         this.itemEntity = itemEntity;
     }
 
-    public CategoryEntity getCategoryEntity() {
+    public int getCategoryEntity() {
         return categoryEntity;
     }
 
-    public void setCategoryEntity(CategoryEntity categoryEntity) {
+    public void setCategoryEntity(int categoryEntity) {
         this.categoryEntity = categoryEntity;
     }
 }

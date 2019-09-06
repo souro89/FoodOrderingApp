@@ -11,13 +11,11 @@ public class RestaurantItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "ITEM_ID")
-    private ItemEntity itemEntity;
+    @Column(name = "ITEM_ID")
+    private int itemEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "RESTAURANT_ID")
-    private RestaurantEntity restaurantEntity;
+    @Column(name = "RESTAURANT_ID")
+    private int restaurantEntity;
 
     public long getId() {
         return id;
@@ -27,19 +25,19 @@ public class RestaurantItemEntity {
         this.id = id;
     }
 
-    public ItemEntity getItemEntity() {
+    public int getItemEntity() {
         return itemEntity;
     }
 
-    public void setItemEntity(ItemEntity itemEntity) {
+    public void setItemEntity(int itemEntity) {
         this.itemEntity = itemEntity;
     }
 
-    public RestaurantEntity getRestaurantEntity() {
+    public int getRestaurantEntity() {
         return restaurantEntity;
     }
 
-    public void setRestaurantEntity(RestaurantEntity restaurantEntity) {
+    public void setRestaurantEntity(int restaurantEntity) {
         this.restaurantEntity = restaurantEntity;
     }
 }

@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ORDER")
@@ -39,6 +40,10 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")
     private RestaurantEntity restaurantEntity;
+
+
+
+
 
     public long getId() {
         return id;

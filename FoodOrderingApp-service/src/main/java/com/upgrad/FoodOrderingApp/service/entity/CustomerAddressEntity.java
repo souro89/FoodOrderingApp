@@ -11,14 +11,13 @@ public class CustomerAddressEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "CUSTOMER_ID")
-    private CustomerEntity customerEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "ADDRESS_ID")
-    private AddressEntity addressEntity;
+    @Column(name = "CUSTOMER_ID")
+    private long customerEntity;
 
+
+    @Column(name = "ADDRESS_ID")
+    private long addressEntity;
 
 
     public long getId() {
@@ -29,19 +28,23 @@ public class CustomerAddressEntity {
         this.id = id;
     }
 
-    public CustomerEntity getCustomerEntity() {
+    public long getCustomerEntity() {
         return customerEntity;
     }
 
-    public void setCustomerEntity(CustomerEntity customerEntity) {
+    public void setCustomerEntity(long customerEntity) {
         this.customerEntity = customerEntity;
     }
 
-    public AddressEntity getAddressEntity() {
+    public long getAddressEntity() {
         return addressEntity;
     }
 
-    public void setAddressEntity(AddressEntity addressEntity) {
+    public void setAddressEntity(long addressEntity) {
+        this.addressEntity = addressEntity;
+    }
+
+    public void setAddressEntity(int addressEntity) {
         this.addressEntity = addressEntity;
     }
 }

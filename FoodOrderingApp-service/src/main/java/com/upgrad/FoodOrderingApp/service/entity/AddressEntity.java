@@ -6,8 +6,7 @@ import javax.persistence.*;
 @Table(name = "ADDRESS")
 @NamedQueries({
         @NamedQuery(name = "getAddresses" , query = "select a from AddressEntity a"),
-        @NamedQuery(name = "getAddressesByUUID" , query = "select a from AddressEntity a where a.uuid=:uuid"),
-        @NamedQuery(name = "getAddressesByCustomerUUID" , query = "select a from AddressEntity a,CustomerEntity c where c.uuid=:uuid"),
+        @NamedQuery(name = "getAddressesByUUID" , query = "select a from AddressEntity a where a.uuid=:uuid")
 })
 public class AddressEntity {
 
@@ -37,6 +36,19 @@ public class AddressEntity {
 
     @Column(name = "ACTIVE")
     private long active;
+
+    @ManyToOne
+    @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "address_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id"))
+    private CustomerEntity customer;
+
+    public CustomerEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
+    }
 
     public long getId() {
         return id;

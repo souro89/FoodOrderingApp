@@ -11,13 +11,11 @@ public class OrderItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
     @JoinColumn(name = "ORDER_ID")
-    private OrderEntity orderEntity;
+    private int orderEntity;
 
-    @ManyToOne
     @JoinColumn(name = "ITEM_ID")
-    private ItemEntity itemEntity;
+    private int itemEntity;
 
     @Column(name = "QUANTITY")
     private int quantity;
@@ -33,28 +31,28 @@ public class OrderItemEntity {
         this.id = id;
     }
 
-    public OrderEntity getOrderEntity() {
+    public int getOrderEntity() {
         return orderEntity;
     }
 
-    public void setOrderEntity(OrderEntity orderEntity) {
+    public void setOrderEntity(int orderEntity) {
         this.orderEntity = orderEntity;
     }
 
-    public ItemEntity getItemEntity() {
+    public int getItemEntity() {
         return itemEntity;
     }
 
-    public void setItemEntity(ItemEntity itemEntity) {
+    public void setItemEntity(int itemEntity) {
         this.itemEntity = itemEntity;
     }
 
-    public int getQuatity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuatity(int quatity) {
-        this.quantity = quatity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public int getPrice() {

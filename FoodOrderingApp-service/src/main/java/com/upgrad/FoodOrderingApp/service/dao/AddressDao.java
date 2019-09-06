@@ -30,15 +30,6 @@ public class AddressDao {
         }
     }
 
-    public List<AddressEntity> getAddresses(CustomerEntity customerEntity){
-        try {
-            return entityManager.createNamedQuery("getAddressesByCustomerUUID", AddressEntity.class)
-                    .setParameter("uuid", customerEntity.getUuid()).getResultList();
-        }catch (NoResultException exe){
-            return null;
-        }
-    }
-
     public AddressEntity getAddressesByUUID(String uuid){
         try {
             return entityManager.createNamedQuery("getAddresses", AddressEntity.class).setParameter("uuid", uuid)

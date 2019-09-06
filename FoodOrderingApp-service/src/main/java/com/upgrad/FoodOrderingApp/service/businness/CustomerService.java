@@ -27,8 +27,23 @@ public class CustomerService {
     @Autowired
     private CustomerDao customerDao;
 
-    public Object getCustomer(String database_accesstoken2) {
-        return null;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity getCustomer(String auth) throws AuthorizationFailedException {
+
+System.out.println("Check");
+        CustomerAuthEntity customerAuthEntity = customerDao.getCusotmerAuth(auth);
+        if(customerAuthEntity==null){
+            throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
+        }
+        if(customerAuthEntity.getLogoutAt()!=null){
+            throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
+        }
+        ZonedDateTime now = ZonedDateTime.now();
+        if(now.isAfter(customerAuthEntity.getExpiresAt())){
+            throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
+        }
+
+        return customerAuthEntity.getCustomerEntity();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -62,13 +77,8 @@ public class CustomerService {
             throw new SignUpRestrictedException("SGR-004","Weak password!");
         }
 
-        Pattern pattern = Pattern.compile("(^[A-Za-z0-9]+)@([A-Za-z0-9]+)(\\.)([A-Za-z0-9]+)");
-        Matcher m = pattern.matcher(customerEntity.getEmail());
-        System.out.println(m.find());
-
-
-        if(!m.find()){
-            throw new SignUpRestrictedException("SGR-002","Invalid email-id format!");
+        if (!customerEntity.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}")) {
+            throw new SignUpRestrictedException("SGR-002", "Invalid email-id format!");
         }
 
         String[] encryptedText= passwordCryptographyProvider.encrypt(customerEntity.getPassword());
@@ -80,24 +90,20 @@ public class CustomerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerAuthEntity loginService(String authorization) throws AuthenticationFailedException {
-        byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
-        String decodedText = new String(decode);
-        String[] decodedArray = decodedText.split(":");
-        if(decodedArray.length<2){
-            throw new AuthenticationFailedException("ATH-003","Incorrect format of decoded customer name and password");
-        }
-        if(decodedArray[0]==null || decodedArray[0]=="" ||decodedArray[1]==null || decodedArray[1]=="" ){
+    public CustomerAuthEntity loginService(String contactNumber, String password) throws AuthenticationFailedException {
+
+
+        if(contactNumber==null || contactNumber=="" || password==null || password=="" ){
             throw new AuthenticationFailedException("ATH-003","Incorrect format of decoded customer name and password");
         }
 
-        CustomerEntity customerEntity = customerDao.getCustomer(decodedArray[0]);
+        CustomerEntity customerEntity = customerDao.getCustomer(contactNumber);
 
         if(customerEntity == null){
             throw new AuthenticationFailedException("ATH-001","This contact number has not been registered!");
         }
 
-        String encryptedPassword = passwordCryptographyProvider.encrypt(decodedArray[1],customerEntity.getSalt());
+        String encryptedPassword = passwordCryptographyProvider.encrypt(password,customerEntity.getSalt());
         if(encryptedPassword.equals(customerEntity.getPassword())){
             JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
             CustomerAuthEntity customerAuthEntity = new CustomerAuthEntity();
@@ -118,12 +124,12 @@ public class CustomerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity logout(String authorization) throws AuthorizationFailedException {
+    public CustomerAuthEntity logout(String authorization) throws AuthorizationFailedException {
 
-        String[] bearerToken = authorization.split("Bearer ");
-        CustomerAuthEntity customerAuthEntity = customerDao.getCusotmerAuth(bearerToken[1]);
+
+        CustomerAuthEntity customerAuthEntity = customerDao.getCusotmerAuth(authorization);
         if(customerAuthEntity==null){
-            throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
+            throw new AuthorizationFailedException("ATHR-002","Customer is not Logged in.");
         }
         if(customerAuthEntity.getLogoutAt()!=null){
             throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
@@ -135,58 +141,30 @@ public class CustomerService {
 
         customerAuthEntity.setLogoutAt(now);
         customerDao.updateCustomerAuthEntity(customerAuthEntity);
-        return customerAuthEntity.getCustomerEntity();
+        return customerAuthEntity;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity updateCustomerEntity(String authorization,CustomerEntity customerEntity) throws UpdateCustomerException, AuthorizationFailedException {
+    public CustomerEntity updateCustomerEntity(CustomerEntity customerEntity) throws UpdateCustomerException, AuthorizationFailedException {
         if(customerEntity.getFirstName()==null || customerEntity.getFirstName()==""){
             throw new UpdateCustomerException("UCR-002","First name field should not be empty");
         }
-        String[] bearerToken = authorization.split("Bearer ");
-        CustomerAuthEntity customerAuthEntity = customerDao.getCusotmerAuth(bearerToken[1]);
-        if(customerAuthEntity==null){
-            throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
-        }
-        if(customerAuthEntity.getLogoutAt()!=null){
-            throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
-        }
-        ZonedDateTime now = ZonedDateTime.now();
-        if(now.isAfter(customerAuthEntity.getExpiresAt())){
-            throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
-        }
 
-        CustomerEntity updatedCustomerEntity = customerAuthEntity.getCustomerEntity();
-        updatedCustomerEntity.setFirstName(customerEntity.getFirstName());
-        updatedCustomerEntity.setLastName(customerEntity.getLastName());
-        customerDao.updateCustomerEntity(updatedCustomerEntity);
-        return updatedCustomerEntity;
+        customerDao.updateCustomerEntity(customerEntity);
+        return customerEntity;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity changePassword(String authorization,String oldPassword,String newPassword) throws AuthorizationFailedException, UpdateCustomerException {
+    public CustomerEntity changePassword(String oldPassword,String newPassword , CustomerEntity customerEntity)
+            throws AuthorizationFailedException, UpdateCustomerException {
 
-        String[] bearerToken = authorization.split("Bearer ");
-        CustomerAuthEntity customerAuthEntity = customerDao.getCusotmerAuth(bearerToken[1]);
-        if(customerAuthEntity==null){
-            throw new AuthorizationFailedException("ATHR-001","Customer is not Logged in.");
-        }
-        if(customerAuthEntity.getLogoutAt()!=null){
-            throw new AuthorizationFailedException("ATHR-002","Customer is logged out. Log in again to access this endpoint.");
-        }
-        ZonedDateTime now = ZonedDateTime.now();
-        if(now.isAfter(customerAuthEntity.getExpiresAt())){
-            throw new AuthorizationFailedException("ATHR-003","Your session is expired. Log in again to access this endpoint.");
-        }
 
-        if(oldPassword == null || oldPassword == "" || newPassword ==null || newPassword == ""){
-            throw new UpdateCustomerException("UCR-003","No field should be empty");
-        }
-        CustomerEntity customerEntity=customerAuthEntity.getCustomerEntity();
         String encryptedPassword = passwordCryptographyProvider.encrypt(oldPassword,customerEntity.getSalt());
         if(!encryptedPassword.equals(customerEntity.getPassword())){
             throw new UpdateCustomerException("UCR-004","Incorrect old password!");
         }
+
+
 
         Pattern upperCase = Pattern.compile("[A-Z]");
         Matcher upperCaseCheck = upperCase.matcher(newPassword);
