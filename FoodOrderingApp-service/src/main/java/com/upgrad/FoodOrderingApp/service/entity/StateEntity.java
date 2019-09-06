@@ -4,6 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "STATE")
+@NamedQueries({
+        @NamedQuery(name = "getStates" , query = "select s from StateEntity s"),
+        @NamedQuery(name = "getStateByUUID" , query = "select s from StateEntity s where s.uuid=:uuid")
+})
 public class StateEntity {
 
 

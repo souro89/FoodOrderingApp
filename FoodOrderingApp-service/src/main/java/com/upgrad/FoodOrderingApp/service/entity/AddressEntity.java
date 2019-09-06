@@ -4,6 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ADDRESS")
+@NamedQueries({
+        @NamedQuery(name = "getAddresses" , query = "select a from AddressEntity a"),
+        @NamedQuery(name = "getAddressesByUUID" , query = "select a from AddressEntity a where a.uuid=:uuid"),
+        @NamedQuery(name = "getAddressesByCustomerUUID" , query = "select a from AddressEntity a,CustomerEntity c where c.uuid=:uuid"),
+})
 public class AddressEntity {
 
     @Id
