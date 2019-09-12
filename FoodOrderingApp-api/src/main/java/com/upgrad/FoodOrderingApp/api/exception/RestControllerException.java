@@ -75,6 +75,12 @@ public class RestControllerException {
         );
     }
 
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ErrorResponse> invalidRating(CouponNotFoundException exe, WebRequest request){
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),HttpStatus.BAD_REQUEST
+        );
+    }
 
 
 }

@@ -24,14 +24,14 @@ public class OrderEntity implements Serializable {
     private String uuid;
 
     @Column(name = "BILL")
-    private double bill;
+    private BigDecimal bill;
 
     @ManyToOne
     @JoinColumn(name = "COUPON_ID")
     private CouponEntity couponEntity;
 
     @Column(name = "DISCOUNT")
-    private double discount;
+    private BigDecimal discount;
 
     @ManyToOne
     @JoinColumn(name = "PAYMENT_ID")
@@ -64,9 +64,9 @@ public class OrderEntity implements Serializable {
                         Date date,PaymentEntity paymentEntity,
                         CustomerEntity customerEntity,AddressEntity addressEntity, RestaurantEntity restaurant) {
         this.uuid = uuid;
-        this.bill = new Double(bill);
+        this.bill = new BigDecimal(bill);
         this.couponEntity = coupon;
-        this.discount = new Double(discount);
+        this.discount = new BigDecimal(discount);
         this.date = date;
         this.paymentEntity = paymentEntity;
         this.customerEntity = customerEntity;
@@ -100,11 +100,11 @@ public class OrderEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public double getBill() {
+    public BigDecimal getBill() {
         return bill;
     }
 
-    public void setBill(double bill) {
+    public void setBill(BigDecimal bill) {
         this.bill = bill;
     }
 
@@ -116,11 +116,11 @@ public class OrderEntity implements Serializable {
         this.couponEntity = couponEntity;
     }
 
-    public double getDiscount() {
+    public BigDecimal getDiscount() {
         return discount;
     }
 
-    public void setDiscount(double discount) {
+    public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
 

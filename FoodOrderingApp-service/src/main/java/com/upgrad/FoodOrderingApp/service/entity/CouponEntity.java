@@ -4,6 +4,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "COUPON")
+@NamedQueries({
+        @NamedQuery(name="getCouponByName",query = "select c from CouponEntity c where c.couponName=:couponName")
+})
 public class CouponEntity {
 
     @Id

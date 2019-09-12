@@ -82,4 +82,8 @@ public class ItemService {
         return sortedItemList;
     }
 
+    public List<OrderItemEntity> getItemsByOrder(OrderEntity orderEntity){
+        return orderItemDao.getItemsByOrder(orderEntity);
+    }
+
 }
