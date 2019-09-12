@@ -1,11 +1,16 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import com.upgrad.FoodOrderingApp.service.common.ItemType;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "ITEM")
+@NamedQueries({
+        @NamedQuery(name ="getItemByUUID",query="select i from ItemEntity i where i.uuid=:uuid")
+})
 public class ItemEntity {
 
     @Id
@@ -23,7 +28,7 @@ public class ItemEntity {
     private int price;
 
     @Column(name = "TYPE")
-    private String type;
+    private ItemType type;
 
 
 
@@ -69,11 +74,11 @@ public class ItemEntity {
         this.price = price;
     }
 
-    public String getType() {
+    public ItemType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ItemType type) {
         this.type = type;
     }
 

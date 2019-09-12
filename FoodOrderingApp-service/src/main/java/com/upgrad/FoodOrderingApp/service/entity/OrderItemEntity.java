@@ -1,9 +1,14 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.hibernate.criterion.Order;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ORDER_ITEM")
+@NamedQueries({
+        @NamedQuery(name = "itemsByOrder", query = "select q from OrderItemEntity q where q.orderEntity = :orderEntity"),
+})
 public class OrderItemEntity {
 
     @Id
@@ -11,11 +16,13 @@ public class OrderItemEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @ManyToOne
     @JoinColumn(name = "ORDER_ID")
-    private int orderEntity;
+    private OrderEntity orderEntity;
 
+    @ManyToOne
     @JoinColumn(name = "ITEM_ID")
-    private int itemEntity;
+    private ItemEntity itemEntity;
 
     @Column(name = "QUANTITY")
     private int quantity;
@@ -31,19 +38,19 @@ public class OrderItemEntity {
         this.id = id;
     }
 
-    public int getOrderEntity() {
+    public OrderEntity getOrderEntity() {
         return orderEntity;
     }
 
-    public void setOrderEntity(int orderEntity) {
+    public void setOrderEntity(OrderEntity orderEntity) {
         this.orderEntity = orderEntity;
     }
 
-    public int getItemEntity() {
+    public ItemEntity getItemEntity() {
         return itemEntity;
     }
 
-    public void setItemEntity(int itemEntity) {
+    public void setItemEntity(ItemEntity itemEntity) {
         this.itemEntity = itemEntity;
     }
 

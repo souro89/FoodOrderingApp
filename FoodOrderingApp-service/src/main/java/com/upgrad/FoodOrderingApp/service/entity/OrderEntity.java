@@ -2,10 +2,18 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
-@Table(name = "ORDER")
-public class OrderEntity {
+@Table(name = "ORDERS")
+@NamedQueries({
+        @NamedQuery(name = "ordersByAddress", query = "select q from OrderEntity q where q.addressEntity = :addressEntity"),
+        @NamedQuery(name = "ordersByCustomer", query = "select q from OrderEntity q where q.customerEntity = :customerEntity order by q.date desc "),
+        @NamedQuery(name = "ordersByRestaurant", query = "select q from OrderEntity q where q.restaurant = :restaurant"),
+})
+public class OrderEntity implements Serializable {
 
     @Id
     @Column(name = "ID")
@@ -39,11 +47,42 @@ public class OrderEntity {
 
     @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")
-    private RestaurantEntity restaurantEntity;
+    @NotNull
+    private RestaurantEntity restaurant;
 
 
 
 
+    @Column(name = "date")
+    @NotNull
+    private Date date;
+
+    public OrderEntity() {}
+
+    public OrderEntity( String uuid, Double bill,
+                       CouponEntity coupon, Double discount,
+                        Date date,PaymentEntity paymentEntity,
+                        CustomerEntity customerEntity,AddressEntity addressEntity, RestaurantEntity restaurant) {
+        this.uuid = uuid;
+        this.bill = new Double(bill);
+        this.couponEntity = coupon;
+        this.discount = new Double(discount);
+        this.date = date;
+        this.paymentEntity = paymentEntity;
+        this.customerEntity = customerEntity;
+        this.addressEntity = addressEntity;
+        this.restaurant = restaurant;
+    }
+
+
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public long getId() {
         return id;
@@ -109,11 +148,11 @@ public class OrderEntity {
         this.addressEntity = addressEntity;
     }
 
-    public RestaurantEntity getRestaurantEntity() {
-        return restaurantEntity;
+    public RestaurantEntity getRestaurant() {
+        return restaurant;
     }
 
-    public void setRestaurantEntity(RestaurantEntity restaurantEntity) {
-        this.restaurantEntity = restaurantEntity;
+    public void setRestaurant(RestaurantEntity restaurant) {
+        this.restaurant= restaurant;
     }
 }

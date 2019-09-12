@@ -1,12 +1,19 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "RESTAURANT")
-public class RestaurantEntity {
+@NamedQueries({
+        @NamedQuery(name = "getAllRestaurants",query = "select r from RestaurantEntity r order by r.customerRating desc"),
+        @NamedQuery(name = "getRestaurantsByName",query = "select r from RestaurantEntity r where upper(r.restaurantName) like CONCAT('%',:restaurantName,'%') order by r.customerRating desc"),
+        @NamedQuery(name = "getRestaurantByUUID",query = "select r from RestaurantEntity r where r.uuid=:uuid")
+})
+public class RestaurantEntity  {
 
     @Id
     @Column(name = "ID")
@@ -23,10 +30,10 @@ public class RestaurantEntity {
     private String photoUrl;
 
     @Column(name = "CUSTOMER_RATING")
-    private int customerRating;
+    private BigDecimal customerRating;
 
     @Column(name = "AVERAGE_PRICE_FOR_TWO")
-    private int averagePriceForTwo;
+    private Integer averagePriceForTwo;
 
     @Column(name = "NUMBER_OF_CUSTOMERS_RATED")
     private int numberOfCustomersRated;
@@ -94,19 +101,19 @@ public class RestaurantEntity {
         this.photoUrl = photoUrl;
     }
 
-    public int getCustomerRating() {
+    public BigDecimal getCustomerRating() {
         return customerRating;
     }
 
-    public void setCustomerRating(int customerRating) {
+    public void setCustomerRating(BigDecimal customerRating) {
         this.customerRating = customerRating;
     }
 
-    public int getAveragePriceForTwo() {
+    public Integer getAveragePriceForTwo() {
         return averagePriceForTwo;
     }
 
-    public void setAveragePriceForTwo(int averagePriceForTwo) {
+    public void setAveragePriceForTwo(Integer averagePriceForTwo) {
         this.averagePriceForTwo = averagePriceForTwo;
     }
 

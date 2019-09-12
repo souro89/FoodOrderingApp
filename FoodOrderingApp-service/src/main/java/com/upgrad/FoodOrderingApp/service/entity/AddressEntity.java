@@ -42,6 +42,19 @@ public class AddressEntity {
             inverseJoinColumns = @JoinColumn(name = "customer_id"))
     private CustomerEntity customer;
 
+    public AddressEntity() {}
+
+    public AddressEntity(String uuid, String flatNo, String locality, String city, String pincode, StateEntity stateEntity) {
+        this.uuid = uuid;
+        this.faltBuilNumber = flatNo;
+        this.locality = locality;
+        this.city = city;
+        this.pincode = pincode;
+        this.stateEntity = stateEntity;
+        this.active = 1;
+    }
+
+
     public CustomerEntity getCustomer() {
         return customer;
     }
