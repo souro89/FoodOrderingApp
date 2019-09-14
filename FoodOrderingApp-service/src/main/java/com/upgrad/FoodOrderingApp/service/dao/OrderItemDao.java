@@ -24,4 +24,10 @@ public class OrderItemDao {
         }
     }
 
+    /* To map item to order */
+    public OrderItemEntity createOrderItemEntity(OrderItemEntity orderItemEntity) {
+        entityManager.persist(orderItemEntity);
+        return orderItemEntity;
+    }
+
 }

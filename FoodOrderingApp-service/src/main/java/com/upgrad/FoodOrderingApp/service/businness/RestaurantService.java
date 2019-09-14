@@ -42,9 +42,13 @@ public class RestaurantService {
     @Transactional(propagation = Propagation.REQUIRED)
     public List<RestaurantEntity> restaurantsByName(String someRestaurantName) throws RestaurantNotFoundException {
 
-        if(restaurantDao.restaurantsByName(someRestaurantName) == null){
-            throw new RestaurantNotFoundException("RNF-003", "Restaurant name field should not be empty");
+
+
+        if(someRestaurantName == "" || someRestaurantName == null){
+            throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
         }
+
+
 
         return restaurantDao.restaurantsByName(someRestaurantName);
     }

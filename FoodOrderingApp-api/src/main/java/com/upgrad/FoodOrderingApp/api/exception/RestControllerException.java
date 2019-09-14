@@ -76,11 +76,25 @@ public class RestControllerException {
     }
 
     @ExceptionHandler(CouponNotFoundException.class)
-    public ResponseEntity<ErrorResponse> invalidRating(CouponNotFoundException exe, WebRequest request){
+    public ResponseEntity<ErrorResponse> couponNotFound(CouponNotFoundException exe, WebRequest request){
         return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),HttpStatus.BAD_REQUEST
+                new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),HttpStatus.NOT_FOUND
         );
     }
 
+
+    @ExceptionHandler(PaymentMethodNotFoundException.class)
+    public ResponseEntity<ErrorResponse> paymentMethodNotFound(PaymentMethodNotFoundException exe, WebRequest request){
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<ErrorResponse> paymentMethodNotFound(ItemNotFoundException exe, WebRequest request){
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()),HttpStatus.NOT_FOUND
+        );
+    }
 
 }

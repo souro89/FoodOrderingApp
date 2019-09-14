@@ -1,16 +1,13 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
+import com.sun.xml.internal.ws.wsdl.writer.document.http.Address;
 import com.upgrad.FoodOrderingApp.api.model.*;
-import com.upgrad.FoodOrderingApp.service.businness.CouponService;
-import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
-import com.upgrad.FoodOrderingApp.service.businness.ItemService;
-import com.upgrad.FoodOrderingApp.service.businness.OrderService;
+import com.upgrad.FoodOrderingApp.service.businness.*;
 import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
-import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
-import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.attribute.standard.Media;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,8 +24,6 @@ import java.util.UUID;
 @CrossOrigin
 public class OrderController {
 
-    @Autowired
-    private CouponService couponService;
 
     @Autowired
     private CustomerService customerService;
@@ -38,6 +34,15 @@ public class OrderController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private PaymentService paymentService;
+
+    @Autowired
+    private AddressService addressService;
+
+    @Autowired
+    private RestaurantService restaurantService;
+
     @RequestMapping(method = RequestMethod.GET ,path = "/order/coupon/{coupon_name}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName
                         , @RequestHeader("authorization") String authorization) throws AuthorizationFailedException, CouponNotFoundException {
@@ -45,7 +50,7 @@ public class OrderController {
         String[] bearerToken = authorization.split("Bearer ");
         CustomerEntity customerEntity = customerService.getCustomer(bearerToken[1]);
 
-        CouponEntity couponEntity = couponService.getCouponByName(couponName);
+        CouponEntity couponEntity = orderService.getCouponByName(couponName);
 
         CouponDetailsResponse couponDetailsResponse = new CouponDetailsResponse().id(UUID.fromString(couponEntity.getUuid()))
                 .couponName(couponEntity.getCouponName()).percent(couponEntity.getPercent());
@@ -61,7 +66,7 @@ public class OrderController {
         String[] bearerToken = authorization.split("Bearer ");
         CustomerEntity customerEntity = customerService.getCustomer(bearerToken[1]);
 
-        List<OrderEntity> orderEntities = orderService.getOrdersbyCustomer(customerEntity);
+        List<OrderEntity> orderEntities = orderService.getOrdersByCustomers(customerEntity.getUuid());
 
         CustomerOrderResponse customerOrderResponse = new CustomerOrderResponse();
 
@@ -128,5 +133,44 @@ public class OrderController {
         return new ResponseEntity<CustomerOrderResponse>(customerOrderResponse,HttpStatus.OK);
 
     }
+
+
+    @RequestMapping(method = RequestMethod.POST, path = "/order", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SaveOrderResponse> saveOrder(
+            @RequestBody(required = false) final SaveOrderRequest saveOrderRequest,
+            @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, CouponNotFoundException,
+            AddressNotFoundException, PaymentMethodNotFoundException,
+            RestaurantNotFoundException, ItemNotFoundException
+    {
+        String accessToken = authorization.split("Bearer ")[1];
+        CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+
+        final OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setUuid(UUID.randomUUID().toString());
+        orderEntity.setCouponEntity(orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString()));
+        orderEntity.setPaymentEntity(paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()));
+        orderEntity.setCustomerEntity(customerEntity);
+        orderEntity.setAddressEntity(addressService.getAddressByUUID(saveOrderRequest.getAddressId(), customerEntity));
+        orderEntity.setBill(saveOrderRequest.getBill());
+        orderEntity.setDiscount(saveOrderRequest.getDiscount());
+        orderEntity.setRestaurant(restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString()));
+        orderEntity.setDate(new Date());
+        OrderEntity savedOrderEntity = orderService.saveOrder(orderEntity);
+
+        for (ItemQuantity itemQuantity : saveOrderRequest.getItemQuantities()) {
+            OrderItemEntity orderItemEntity = new OrderItemEntity();
+            orderItemEntity.setOrderEntity(savedOrderEntity);
+            orderItemEntity.setItemEntity(itemService.getItemByUUID(itemQuantity.getItemId().toString()));
+            orderItemEntity.setQuantity(itemQuantity.getQuantity());
+            orderItemEntity.setPrice(itemQuantity.getPrice());
+            orderService.saveOrderItem(orderItemEntity);
+        }
+
+        SaveOrderResponse saveOrderResponse = new SaveOrderResponse()
+                .id(savedOrderEntity.getUuid()).status("ORDER SUCCESSFULLY PLACED");
+        return new ResponseEntity<SaveOrderResponse>(saveOrderResponse, HttpStatus.CREATED);
+    }
+
 
 }

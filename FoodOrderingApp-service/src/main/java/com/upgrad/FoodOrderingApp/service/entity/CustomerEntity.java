@@ -7,7 +7,8 @@ import java.util.List;
 @Entity
 @Table(name = "CUSTOMER")
 @NamedQueries({
-        @NamedQuery(name = "phoneNumber" , query = "select c from CustomerEntity c where c.contactNumber=:contactNumber")
+        @NamedQuery(name = "phoneNumber" , query = "select c from CustomerEntity c where c.contactNumber=:contactNumber"),
+        @NamedQuery(name = "customerByUUID", query = "select c from CustomerEntity c where c.uuid = :uuid")
 })
 public class CustomerEntity {
 

@@ -65,7 +65,7 @@ public class RestaurantController {
 
             String categories = "";
 
-            List<CategoryEntity> categoryEntities = restaurantEntity.getCategories();
+            List<CategoryEntity> categoryEntities = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid());
 
             Collections.sort(categoryEntities, new Comparator<CategoryEntity>() {
                 @Override
@@ -101,15 +101,17 @@ public class RestaurantController {
     @RequestMapping(method = RequestMethod.GET,path = "/restaurant/name/{restaurant_name}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantListResponse> restaurantsByName(@PathVariable("restaurant_name") String restaurantName) throws RestaurantNotFoundException {
 
-        if(restaurantName == "" || restaurantName == null){
-            throw new RestaurantNotFoundException("RNF-003","Restaurant name field should not be empty");
-        }
 
-        List<RestaurantEntity> restaurantList = restaurantService.restaurantsByName(restaurantName);
+        List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantsByName(restaurantName);
 
         RestaurantListResponse restaurantListResponse = new RestaurantListResponse();
 
-        for(RestaurantEntity  restaurantEntity : restaurantList){
+        if (restaurantEntityList.isEmpty()) {
+            return new ResponseEntity<RestaurantListResponse>(restaurantListResponse, HttpStatus.OK);
+        }
+
+
+        for(RestaurantEntity  restaurantEntity : restaurantEntityList){
             RestaurantDetailsResponseAddressState restaurantDetailsResponseAddressState = new RestaurantDetailsResponseAddressState()
                     .id(UUID.fromString(restaurantEntity.getAddressEntity().getStateEntity().getUuid()))
                     .stateName(restaurantEntity.getAddressEntity().getStateEntity().getStateName());
@@ -124,7 +126,7 @@ public class RestaurantController {
 
             String categories = "";
 
-            List<CategoryEntity> categoryEntities = restaurantEntity.getCategories();
+            List<CategoryEntity> categoryEntities = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid());
 
             Collections.sort(categoryEntities, new Comparator<CategoryEntity>() {
                 @Override
@@ -189,7 +191,7 @@ public class RestaurantController {
 
             String categories = "";
 
-            List<CategoryEntity> categoryEntities = restaurantEntity.getCategories();
+            List<CategoryEntity> categoryEntities = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid());
 
             Collections.sort(categoryEntities, new Comparator<CategoryEntity>() {
                 @Override
@@ -272,7 +274,7 @@ public class RestaurantController {
 
             List<ItemEntity> itemEntities = itemService.getItemsByCategoryAndRestaurant(restaurantId,categoryEntity.getUuid());
 
-            for(ItemEntity itemEntity : itemService.getItemsByCategoryAndRestaurant(restaurantId,categoryEntity.getUuid())){
+            for(ItemEntity itemEntity : itemEntities){
                 ItemList itemList = new ItemList()
                         .id(UUID.fromString(itemEntity.getUuid()))
                         .itemName(itemEntity.getItemName())

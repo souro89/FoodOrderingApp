@@ -37,4 +37,10 @@ public class OrdersDao {
         }
     }
 
+    /* Method to create new order */
+    public OrderEntity createOrder(OrderEntity orderEntity) {
+        entityManager.persist(orderEntity);
+        return orderEntity;
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "PAYMENT")
@@ -20,6 +22,13 @@ public class PaymentEntity {
 
     @Column(name = "PAYMENT_NAME")
     private String paymentName;
+
+    public PaymentEntity() {}
+
+    public PaymentEntity(@NotNull @Size(max = 200) String uuid, @NotNull @Size(max = 255) String paymentName) {
+        this.uuid = uuid;
+        this.paymentName = paymentName;
+    }
 
     public long getId() {
         return id;

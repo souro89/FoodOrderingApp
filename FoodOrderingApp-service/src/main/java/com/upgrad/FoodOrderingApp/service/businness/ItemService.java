@@ -5,6 +5,7 @@ import com.upgrad.FoodOrderingApp.service.dao.OrderItemDao;
 import com.upgrad.FoodOrderingApp.service.dao.OrdersDao;
 import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.CategoryNotFoundException;
+import com.upgrad.FoodOrderingApp.service.exception.ItemNotFoundException;
 import com.upgrad.FoodOrderingApp.service.exception.RestaurantNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +85,15 @@ public class ItemService {
 
     public List<OrderItemEntity> getItemsByOrder(OrderEntity orderEntity){
         return orderItemDao.getItemsByOrder(orderEntity);
+    }
+
+    /* Method to fetch item based on item UUID else would throw item not found exception*/
+    public ItemEntity getItemByUUID(String uuid) throws ItemNotFoundException {
+        ItemEntity itemEntity = itemDao.getItemByUUID(uuid);
+        if (itemEntity == null) {
+            throw new ItemNotFoundException("INF-003", "No item by this id exist");
+        }
+        return itemEntity;
     }
 
 }
