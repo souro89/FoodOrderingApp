@@ -48,7 +48,7 @@ public class OrderController {
         CouponEntity couponEntity = couponService.getCouponByName(couponName);
 
         CouponDetailsResponse couponDetailsResponse = new CouponDetailsResponse().id(UUID.fromString(couponEntity.getUuid()))
-                .couponName(couponEntity.getCouponName());
+                .couponName(couponEntity.getCouponName()).percent(couponEntity.getPercent());
 
         return new ResponseEntity<CouponDetailsResponse>(couponDetailsResponse,HttpStatus.OK);
 

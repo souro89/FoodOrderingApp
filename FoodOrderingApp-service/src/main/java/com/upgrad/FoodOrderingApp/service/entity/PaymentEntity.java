@@ -4,6 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "PAYMENT")
+@NamedQueries({
+        @NamedQuery(name="allPaymentMethods",query="select p from PaymentEntity p"),
+        @NamedQuery(name = "paymentByUUID", query = "select q from PaymentEntity q where q.uuid = :uuid"),
+})
 public class PaymentEntity {
 
     @Id
