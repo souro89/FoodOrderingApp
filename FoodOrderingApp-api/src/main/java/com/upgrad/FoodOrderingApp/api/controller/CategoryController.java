@@ -30,8 +30,9 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @RequestMapping(method = RequestMethod.GET,path = "/category",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CategoriesListResponse> getAllCategories(){
+    /*Gets all categories in sorted order*/
+    @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CategoriesListResponse> getAllCategories() {
 
         List<CategoryEntity> categoryEntities = categoryService.getAllCategories();
         Collections.sort(categoryEntities, new Comparator<CategoryEntity>() {
@@ -43,11 +44,11 @@ public class CategoryController {
 
         CategoriesListResponse categoriesListResponse = new CategoriesListResponse();
 
-        for(CategoryEntity categoryEntity : categoryEntities){
+        for (CategoryEntity categoryEntity : categoryEntities) {
             CategoryListResponse categoryListResponse = new CategoryListResponse();
             categoryListResponse.id(UUID.fromString(categoryEntity.getUuid()))
-                                .categoryName(categoryEntity.getCategoryName())
-                                ;
+                    .categoryName(categoryEntity.getCategoryName())
+            ;
             categoriesListResponse.addCategoriesItem(categoryListResponse);
         }
 
@@ -55,18 +56,19 @@ public class CategoryController {
 
     }
 
-    @RequestMapping(method = RequestMethod.GET,path = "/category/{category_id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    /*Get Category by Category UUID*/
+    @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryByUUID(
             @PathVariable("category_id") String categoryId) throws CategoryNotFoundException {
 
-        if(categoryId == null || categoryId ==""){
-            throw new CategoryNotFoundException("CNF-001","Category id field should not be empty");
+        if (categoryId == null || categoryId == "") {
+            throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
         }
 
         CategoryEntity categoryEntity = categoryService.categoryByUUID(categoryId);
 
-        if(categoryEntity == null){
-            throw new CategoryNotFoundException("CNF-002","No category by this id");
+        if (categoryEntity == null) {
+            throw new CategoryNotFoundException("CNF-002", "No category by this id");
         }
 
         CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse().id(UUID.fromString(categoryEntity.getUuid())).categoryName(categoryEntity.getCategoryName());
