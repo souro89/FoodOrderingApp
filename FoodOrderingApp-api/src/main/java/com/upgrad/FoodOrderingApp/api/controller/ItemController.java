@@ -32,23 +32,24 @@ public class ItemController {
     @Autowired
     private RestaurantService restaurantService;
 
-    @RequestMapping(method = RequestMethod.GET,path = "/item/restaurant/{restaurant_id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    /*Get top 5 items by restaurant*/
+    @RequestMapping(method = RequestMethod.GET, path = "/item/restaurant/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ItemListResponse> getItemsByPopularity(@PathVariable("restaurant_id") String restaurantId) throws RestaurantNotFoundException {
         RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurantId);
         List<ItemEntity> itemEntities = itemService.getItemsByPopularity(restaurantEntity);
 
         int count = 0;
         ItemListResponse itemListResponse = new ItemListResponse();
-        for(ItemEntity itemEntity : itemEntities){
-            if(count <= 5){
+        for (ItemEntity itemEntity : itemEntities) {
+            if (count <= 5) {
                 ItemList itemList = new ItemList()
                         .id(UUID.fromString(itemEntity.getUuid()))
                         .itemName(itemEntity.getItemName())
                         .price(itemEntity.getPrice())
                         .itemType(ItemList.ItemTypeEnum.fromValue(itemEntity.getType().getValue()));
                 itemListResponse.add(itemList);
-                count+=1;
-            }else{
+                count += 1;
+            } else {
                 break;
             }
         }
