@@ -15,18 +15,18 @@ public class CustomerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CustomerEntity saveCustomer(CustomerEntity customerEntity){
+    public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
         entityManager.persist(customerEntity);
         return customerEntity;
     }
 
-    public boolean checkContactNumber(String contactNumber){
+    public boolean checkContactNumber(String contactNumber) {
 
         try {
             entityManager.createNamedQuery("phoneNumber", CustomerEntity.class).setParameter("contactNumber", contactNumber)
                     .getSingleResult();
             return true;
-        }catch(NoResultException nre){
+        } catch (NoResultException nre) {
             return false;
         }
 
@@ -36,30 +36,30 @@ public class CustomerDao {
         try {
             return entityManager.createNamedQuery("phoneNumber", CustomerEntity.class).setParameter("contactNumber", contactNumber)
                     .getSingleResult();
-        }catch(NoResultException nre){
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public CustomerAuthEntity storeToken(CustomerAuthEntity customerAuthEntity){
+    public CustomerAuthEntity storeToken(CustomerAuthEntity customerAuthEntity) {
         entityManager.persist(customerAuthEntity);
         return customerAuthEntity;
     }
 
-    public CustomerAuthEntity getCusotmerAuth(String accessToken){
+    public CustomerAuthEntity getCusotmerAuth(String accessToken) {
         try {
             return entityManager.createNamedQuery("customerAuth", CustomerAuthEntity.class)
                     .setParameter("accessToken", accessToken).getSingleResult();
-        }catch (NoResultException exe){
+        } catch (NoResultException exe) {
             return null;
         }
     }
 
-    public void updateCustomerAuthEntity(CustomerAuthEntity customerAuthEntity){
+    public void updateCustomerAuthEntity(CustomerAuthEntity customerAuthEntity) {
         entityManager.merge(customerAuthEntity);
     }
 
-    public void updateCustomerEntity(CustomerEntity customerEntity){
+    public void updateCustomerEntity(CustomerEntity customerEntity) {
         entityManager.merge(customerEntity);
     }
 

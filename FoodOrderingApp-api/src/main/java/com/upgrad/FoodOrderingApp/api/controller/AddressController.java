@@ -31,7 +31,8 @@ public class AddressController {
     @Autowired
     private CustomerService customerService;
 
-    @RequestMapping(method = RequestMethod.POST,path = "/address",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
+    /*save an address*/
+    @RequestMapping(method = RequestMethod.POST, path = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader("authorization") String authorization,
                                                            @RequestBody(required = false) SaveAddressRequest saveAddressRequest) throws AddressNotFoundException, AuthorizationFailedException, SaveAddressException {
 
@@ -47,13 +48,14 @@ public class AddressController {
         addressEntity.setLocality(saveAddressRequest.getLocality());
         addressEntity.setPincode(saveAddressRequest.getPincode());
 
-        AddressEntity savedAddress = addressService.saveAddress(addressEntity,customerEntity);
+        AddressEntity savedAddress = addressService.saveAddress(addressEntity, customerEntity);
         SaveAddressResponse saveAddressResponse = new SaveAddressResponse().id(savedAddress.getUuid())
                 .status("ADDRESS SUCCESSFULLY REGISTERED");
-        return new ResponseEntity<SaveAddressResponse>(saveAddressResponse,HttpStatus.CREATED);
+        return new ResponseEntity<SaveAddressResponse>(saveAddressResponse, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET,path = "/address/customer",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
+    /*get addresses for a customer*/
+    @RequestMapping(method = RequestMethod.GET, path = "/address/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAddress(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException {
 
         String[] bearerToken = authorization.split("Bearer ");
@@ -63,7 +65,7 @@ public class AddressController {
         List<AddressEntity> addressEntities = addressService.getAddresses(customerEntity);
 
         AddressListResponse addressListResponse = new AddressListResponse();
-        for(AddressEntity addressEntity : addressEntities){
+        for (AddressEntity addressEntity : addressEntities) {
             AddressList addressList = new AddressList();
             addressList.setCity(addressEntity.getCity());
             addressList.setId(UUID.fromString(addressEntity.getUuid()));
@@ -76,13 +78,12 @@ public class AddressController {
             addressList.setState(addressListState);
             addressListResponse.addAddressesItem(addressList);
         }
-        return new ResponseEntity<AddressListResponse>(addressListResponse,HttpStatus.OK);
+        return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
     }
 
     /* to retrieve all states in db*/
     @RequestMapping(method = RequestMethod.GET, path = "/states", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<StatesListResponse> getAllStates()
-    {
+    public ResponseEntity<StatesListResponse> getAllStates() {
         // Get all states
         List<StateEntity> statesList = addressService.getStates();
 
@@ -104,8 +105,7 @@ public class AddressController {
     public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(
             @PathVariable("address_id") final String addressID,
             @RequestHeader("authorization") final String authorization)
-            throws AuthorizationFailedException, AddressNotFoundException
-    {
+            throws AuthorizationFailedException, AddressNotFoundException {
         String accessToken = authorization.split("Bearer ")[1];
         CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
