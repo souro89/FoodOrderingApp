@@ -43,9 +43,10 @@ public class OrderController {
     @Autowired
     private RestaurantService restaurantService;
 
-    @RequestMapping(method = RequestMethod.GET ,path = "/order/coupon/{coupon_name}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    /*Get Coupon By Name*/
+    @RequestMapping(method = RequestMethod.GET, path = "/order/coupon/{coupon_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CouponDetailsResponse> getCouponByName(@PathVariable("coupon_name") String couponName
-                        , @RequestHeader("authorization") String authorization) throws AuthorizationFailedException, CouponNotFoundException {
+            , @RequestHeader("authorization") String authorization) throws AuthorizationFailedException, CouponNotFoundException {
 
         String[] bearerToken = authorization.split("Bearer ");
         CustomerEntity customerEntity = customerService.getCustomer(bearerToken[1]);
@@ -55,11 +56,12 @@ public class OrderController {
         CouponDetailsResponse couponDetailsResponse = new CouponDetailsResponse().id(UUID.fromString(couponEntity.getUuid()))
                 .couponName(couponEntity.getCouponName()).percent(couponEntity.getPercent());
 
-        return new ResponseEntity<CouponDetailsResponse>(couponDetailsResponse,HttpStatus.OK);
+        return new ResponseEntity<CouponDetailsResponse>(couponDetailsResponse, HttpStatus.OK);
 
     }
 
-    @RequestMapping(method = RequestMethod.GET,path = "/order",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    /*Get order by Customer*/
+    @RequestMapping(method = RequestMethod.GET, path = "/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CustomerOrderResponse> getOrdersbyCustomer(
             @RequestHeader("authorization") String authorization
     ) throws AuthorizationFailedException {
@@ -70,7 +72,7 @@ public class OrderController {
 
         CustomerOrderResponse customerOrderResponse = new CustomerOrderResponse();
 
-        for(OrderEntity orderEntity : orderEntities){
+        for (OrderEntity orderEntity : orderEntities) {
             OrderList orderList = new OrderList();
 
             OrderListCoupon orderListCoupon = new OrderListCoupon()
@@ -130,19 +132,19 @@ public class OrderController {
 
         }
 
-        return new ResponseEntity<CustomerOrderResponse>(customerOrderResponse,HttpStatus.OK);
+        return new ResponseEntity<CustomerOrderResponse>(customerOrderResponse, HttpStatus.OK);
 
     }
 
 
+    /*Save order by customer*/
     @RequestMapping(method = RequestMethod.POST, path = "/order", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SaveOrderResponse> saveOrder(
             @RequestBody(required = false) final SaveOrderRequest saveOrderRequest,
             @RequestHeader("authorization") final String authorization)
             throws AuthorizationFailedException, CouponNotFoundException,
             AddressNotFoundException, PaymentMethodNotFoundException,
-            RestaurantNotFoundException, ItemNotFoundException
-    {
+            RestaurantNotFoundException, ItemNotFoundException {
         String accessToken = authorization.split("Bearer ")[1];
         CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
