@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.security.auth.login.LoginException;
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,7 +108,7 @@ public class CustomerService {
             JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
             CustomerAuthEntity customerAuthEntity = new CustomerAuthEntity();
             customerAuthEntity.setCustomerEntity(customerEntity);
-            customerAuthEntity.setUuid(customerEntity.getUuid());
+            customerAuthEntity.setUuid(UUID.randomUUID().toString());
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime expiresAt = now.plusHours(8);
             customerAuthEntity.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
