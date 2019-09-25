@@ -55,29 +55,33 @@ public class AddressController {
     }
 
     /*get addresses for a customer*/
-    @RequestMapping(method = RequestMethod.GET, path = "/address/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = "/address/customer", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAddress(@RequestHeader("authorization") String authorization) throws AuthorizationFailedException {
 
         String[] bearerToken = authorization.split("Bearer ");
         CustomerEntity customerEntity = customerService.getCustomer(bearerToken[1]);
 
 
-        List<AddressEntity> addressEntities = addressService.getAddresses(customerEntity);
+        // Get all addresses
+        List<AddressEntity> addressesList = addressService.getAddresses(customerEntity);
 
+        System.out.println("asdasd"+addressesList.get(0));
+
+        // saved addresses to address list variable
         AddressListResponse addressListResponse = new AddressListResponse();
-        for (AddressEntity addressEntity : addressEntities) {
-            AddressList addressList = new AddressList();
-            addressList.setCity(addressEntity.getCity());
-            addressList.setId(UUID.fromString(addressEntity.getUuid()));
-            addressList.setFlatBuildingName(addressEntity.getFaltBuilNumber());
-            addressList.setLocality(addressEntity.getLocality());
-            addressList.setPincode(addressEntity.getPincode());
-            AddressListState addressListState = new AddressListState();
-            addressListState.setStateName(addressEntity.getStateEntity().getStateName());
-            addressListState.setId(UUID.fromString(addressEntity.getStateEntity().getUuid()));
-            addressList.setState(addressListState);
-            addressListResponse.addAddressesItem(addressList);
+
+        for (AddressEntity addressEntity : addressesList) {
+            AddressList addressesResponse = new AddressList()
+                    .id(UUID.fromString(addressEntity.getUuid()))
+                    .flatBuildingName(addressEntity.getFaltBuilNumber())
+                    .locality(addressEntity.getLocality())
+                    .city(addressEntity.getCity())
+                    .pincode(addressEntity.getPincode())
+                    .state(new AddressListState().id(UUID.fromString(addressEntity.getStateEntity().getUuid()))
+                            .stateName(addressEntity.getStateEntity().getStateName()));
+            addressListResponse.addAddressesItem(addressesResponse);
         }
+
         return new ResponseEntity<AddressListResponse>(addressListResponse, HttpStatus.OK);
     }
 
