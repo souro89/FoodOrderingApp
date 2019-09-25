@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
 import com.upgrad.FoodOrderingApp.service.dao.AddressDao;
+import com.upgrad.FoodOrderingApp.service.dao.CustomerAddressDao;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
 import com.upgrad.FoodOrderingApp.service.entity.*;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
@@ -27,6 +28,9 @@ public class AddressService {
     @Autowired
     private CustomerDao customerDao;
 
+    @Autowired
+    private CustomerAddressDao customerAddressDao;
+
     @Transactional(propagation = Propagation.REQUIRED)
     public AddressEntity saveAddress(AddressEntity addressEntity, CustomerEntity customerEntity) throws AuthorizationFailedException, SaveAddressException {
 
@@ -46,13 +50,16 @@ public class AddressService {
             throw new SaveAddressException("SAR-002","Invalid pincode");
         }
 
+        AddressEntity createdAddressEntity =  addressDao.saveAddress(addressEntity);
+
         CustomerAddressEntity customerAddressEntity = new CustomerAddressEntity();
         customerAddressEntity.setCustomerEntity(customerEntity.getId());
-        customerAddressEntity.setAddressEntity(addressEntity.getId());
+        customerAddressEntity.setAddressEntity(createdAddressEntity.getId());
+        customerAddressDao.createCustomerAddress(customerAddressEntity);
 
-        addressDao.saveAddress(addressEntity);
 
-        return addressEntity;
+
+        return createdAddressEntity;
 
     }
 

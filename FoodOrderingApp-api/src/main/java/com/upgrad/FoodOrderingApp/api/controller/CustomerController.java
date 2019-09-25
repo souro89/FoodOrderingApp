@@ -57,6 +57,7 @@ public class CustomerController {
     }
 
     /*Customer login*/
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "/customer/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") String authorization) throws AuthenticationFailedException {
 
@@ -82,6 +83,7 @@ public class CustomerController {
                 .emailAddress(customerEntity.getEmail()).message("LOGGED IN SUCCESSFULLY");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("access-token", customerAuthEntity.getAccessToken());
+        httpHeaders.add("Access-Control-Expose-Headers", "access-token, Content-Length, Date, Server, Transfer-Encoding");
         return new ResponseEntity<LoginResponse>(loginResponse, httpHeaders, HttpStatus.OK);
 
     }
