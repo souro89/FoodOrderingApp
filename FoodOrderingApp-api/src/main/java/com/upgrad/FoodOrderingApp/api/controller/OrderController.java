@@ -150,7 +150,8 @@ public class OrderController {
 
         final OrderEntity orderEntity = new OrderEntity();
         orderEntity.setUuid(UUID.randomUUID().toString());
-        orderEntity.setCouponEntity(orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString()));
+        if(saveOrderRequest.getCouponId()!=null)
+            orderEntity.setCouponEntity(orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString()));
         orderEntity.setPaymentEntity(paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString()));
         orderEntity.setCustomerEntity(customerEntity);
         orderEntity.setAddressEntity(addressService.getAddressByUUID(saveOrderRequest.getAddressId(), customerEntity));

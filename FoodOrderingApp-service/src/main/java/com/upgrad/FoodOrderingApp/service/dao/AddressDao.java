@@ -32,7 +32,7 @@ public class AddressDao {
 
     public AddressEntity getAddressesByUUID(String uuid){
         try {
-            return entityManager.createNamedQuery("getAddresses", AddressEntity.class).setParameter("uuid", uuid)
+            return entityManager.createNamedQuery("getAddressesByUUID", AddressEntity.class).setParameter("uuid", uuid)
                     .getSingleResult();
         }catch (NoResultException exe){
             return null;

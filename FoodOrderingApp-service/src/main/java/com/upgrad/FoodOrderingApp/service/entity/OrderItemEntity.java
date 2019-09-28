@@ -27,7 +27,7 @@ public class OrderItemEntity {
     @Column(name = "QUANTITY")
     private int quantity;
 
-    @Column(name = "QUATITY")
+    @Column(name = "PRICE")
     private int price;
 
     public long getId() {
